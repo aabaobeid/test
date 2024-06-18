@@ -1,0 +1,92 @@
+---
+title: "Sampling"
+author: "Anwaar"
+format: html
+edit
+---
+
+Sampling practice 
+
+```{r}
+echo #|
+library(knitr)
+library(maps)
+library(tidyverse)
+library(tidycensus)
+
+```
+
+
+```{r}
+set.seed(853)
+
+illustrative_sampling <- tibble(
+  unit = 1:100, 
+  simple_random_sampling = 
+    sample (x = c("In", "Out"),
+            size = 100, 
+            replace = TRUE, 
+            prob = c(0.2, 0.8))
+)
+
+illustrative_sampling %>% 
+  count(simple_random_sampling)
+
+```
+
+```{r}
+set.seed(853)
+
+starting_point <- sample(x = c(1:5), size = 1)
+
+illustrative_sampling <-
+  illustrative_sampling %>% 
+  mutate(
+    systematic_sampling =
+      if_else(unit %in% seq.int(from = starting_point, to = 100, by = 5), 
+              "In", 
+              "Out"
+              )
+    )
+
+illustrative_sampling |>
+  count(systematic_sampling)
+
+```
+
+```{r}
+set.seed(853)
+
+picked_in_strata <-
+  illustrative_sampling %>% 
+  mutate(strata = (unit - 1) %/% 10) %>% 
+  slice_sample(n = 2, by = strata) %>% 
+  pull(unit)
+
+illustrative_sampling <-
+  illustrative_sampling %>% 
+  mutate(stratified_sampling = 
+           if_else(unit %in% picked_in_strata, "In", "Out"))
+
+illustrative_sampling %>% 
+  count(stratified_sampling)
+```
+
+```{r}
+set.seed(853)
+
+picked_clusters <-
+  sample(x = c(0:9), size = 2)
+
+illustrative_sampling <-
+  illustrative_sampling |>
+  mutate(
+    cluster = (unit - 1) %/% 10,
+    cluster_sampling = if_else(cluster %in% picked_clusters, "In", "Out")
+    ) |>
+  select(-cluster)
+
+illustrative_sampling |>
+  count(cluster_sampling)
+```
+
