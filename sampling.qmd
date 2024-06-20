@@ -90,3 +90,62 @@ illustrative_sampling |>
   count(cluster_sampling)
 ```
 
+## gathering data
+gathering data notes
+
+```{r}
+library("httr")
+```
+
+## hunt for data
+hunting for data notes
+
+
+```{r}
+library(haven)
+library(knitr)
+library(labelled)
+library(tidyverse)
+```
+
+## randomization
+
+```{r}
+library(haven)
+library(knitr)
+library(labelled)
+library(tidyverse)
+```
+
+
+simulated ex: cats or dogs
+```{r}
+set.seed(853)
+
+num_people <- 5000
+
+population <- tibble(
+  person = 1:num_people, 
+  favourite_colour = sample(c("Blue", "White"), size = num_people, replace = TRUE), 
+  prefers_dogs = if_else(favourite_colour == "Blue", 
+                         rbinom(num_people, 1, 0.9),
+                         rbinom(num_people, 1, 0.1))
+)
+
+population %>% 
+  count(favourite_colour, prefers_dogs)
+```
+
+create sampling frame
+```{r}
+set.seed(853)
+
+frame <-
+  population %>% 
+  mutate(in_frame = rbinom(n= num_people, 1, prob = 0.8)) %>% 
+  filter(in_frame ==1)
+
+frame %>% 
+  count(favourite_colour, prefers_dogs)
+```
+
